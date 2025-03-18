@@ -311,7 +311,7 @@ def main_menu():
     while True:
         print("\nRecipe App - Main Menu")
         print("1. Add a new recipe")
-        print("2. View all recipess")
+        print("2. View all recipes")
         print("3. Search recipes by ingredients")
         print("4. Edit a recipe")
         print("5. Delete a recipe")
