@@ -1,9 +1,24 @@
 # Imports
+import os 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Connect to MySQL Database
-engine = create_engine("mysql://cf-python:password@localhost/my_database", echo=True)
+# Load environment variables from .env file
+load_dotenv()
+
+# Get credentials from environment variables
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+
+# Check if any variable is missing
+if not all([DB_HOST, DB_USER, DB_PASSWORD, DB_NAME]):
+    raise ValueError("Missing database environment variables. Check your .env file. ")
+
+# Secure database connection
+engine = create_engine(f"mysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}", echo=True)
 
 # Create a Session
 Session = sessionmaker(bind=engine)
@@ -11,7 +26,7 @@ session = Session()
 
 # Create Base Class
 Base = declarative_base()
-
+ 
 # Define the recipe model
 class Recipe(Base):
     __tablename__ = "final_recipes"
@@ -191,7 +206,7 @@ def search_by_ingredients():
             print(recipe)
 
     # Close session
-    session = Session()
+    session.close()
 
 def edit_recipe():
     session = Session()

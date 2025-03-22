@@ -1,21 +1,37 @@
 # Import the mysql connector module
+import os
+from dotenv import load_dotenv
 import mysql.connector
 
-# Database Connection
+# Load environment variables
+load_dotenv()
+
+# Get database credentials from environment variables
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+
+# Check if any variable is missing
+if not all([DB_HOST, DB_USER, DB_PASSWORD, DB_NAME]):
+    raise ValueError("Missing database environment variables. Check your .env file. ")
+
+# Function to initialize the database
 def initialize_database():
     # Connect to the MySQL server
     connection = mysql.connector.connect(
-        host="localhost",
-        user="cf-python",
-        password="password",
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     cursor = connection.cursor()
 
     # Create database if it does not exist
-    cursor.execute("CREATE DATABASE IF NOT EXISTS task_database")
+    cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
 
     # Use the database
-    cursor.execute("USE task_database")
+    cursor.execute(f"USE {db_name}")
 
     # Create Recipes table if it does not already exist
     cursor.execute("""
@@ -150,7 +166,7 @@ class Recipe:
 
             if choice == 1:
                 new_name = input("Enter the new recipe name: ")
-                cursor.execute("UPDATE Recipes SET name = %s WHERE id == %s", (new_name, recipe_id))
+                cursor.execute("UPDATE Recipes SET name = %s WHERE id = %s", (new_name, recipe_id))
             elif choice == 2:
                 new_ingredients = input("Enter the new ingredients (comma-seperated): ").split(", ")
                 ingredients_str = ", ".join(new_ingredients)
